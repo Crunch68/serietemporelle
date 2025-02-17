@@ -2,7 +2,6 @@
 
 Vous commencez par runner l'architecture : 
 
-```{r, echo=T}
 
 if(!("here" %in% installed.packages())){ # Vérifie si le package est déja installé
   install.packages("here") # L'installe si besoin
