@@ -19,20 +19,18 @@ layout(matrix(1:2,1,2))
 acf(c(trafic_routier),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan", main=element_blank())
 acf(c(trafic_routier),lag.max= NULL, type = c("partial"),plot = TRUE, col="red",main=element_blank())
 
-#passage en log pour corriger l'accroissement de la saisonnalité
-log_tr=log(trafic_routier)
 
-#transformation du log de la série pour obtenir ses variations
-log_tr_diff1=diff(log_tr,lag=1,differences=1)
+#transformation de la série pour obtenir ses variations
+trafic_routier_diff1=diff(trafic_routier,lag=1,differences=1)
 
-#transformation pour supprimmer les variations saisonnières du log de la série
-log_tr_diff1_12=diff(log_tr_diff1,lag=12,differences=1)
+#transformation pour supprimmer les variations saisonnières de la série
+trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
 
 #ACF et PACF de toutes les séries
 layout(matrix(1:6,3,2))
-acf(c(log_tr),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr_diff1),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr_diff1_12),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
-acf(c(log_tr_diff1),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
-acf(c(log_tr_diff1_12),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier_diff1),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier_diff1_12),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier_diff1),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier_diff1_12),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
