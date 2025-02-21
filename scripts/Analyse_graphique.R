@@ -14,26 +14,23 @@ decomp.x=decompose(trafic_routier,type="multiplicative")
 decomp.x$figure
 plot(decomp.x)
 
-#transformation en log pour corriger l'éventuelle croissance e la saisonnalité
-log_tr <- log(trafic_routier
-              )
 # corrélogrammes
 layout(matrix(1:2,1,2))
-acf(c(log_tr),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan", main=element_blank())
-acf(c(log_tr),lag.max= NULL, type = c("partial"),plot = TRUE, col="red",main=element_blank())
+acf(c(trafic_routier),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan", main=element_blank())
+acf(c(trafic_routier),lag.max= NULL, type = c("partial"),plot = TRUE, col="red",main=element_blank())
 
 
 #transformation de la série pour obtenir ses variations
-log_tr_diff1=diff(log_tr,lag=1,differences=1)
+trafic_routier_diff1=diff(trafic_routier,lag=1,differences=1)
 
 #transformation pour supprimmer les variations saisonnières de la série
-log_tr_diff1_12=diff(log_tr_diff1,lag=12,differences=1)
+trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
 
 #ACF et PACF de toutes les séries
 layout(matrix(1:6,3,2))
-acf(c(log_tr),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr_diff1),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr_diff1_12),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
-acf(c(log_tr),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
-acf(c(log_tr_diff1),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
-acf(c(log_tr_diff1_12),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier_diff1),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier_diff1_12),lag.max= NULL, type = c("correlation"),plot = TRUE, col="cyan")
+acf(c(trafic_routier),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier_diff1),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
+acf(c(trafic_routier_diff1_12),lag.max= NULL, type = c("partial"),plot = TRUE, col="red", main=element_blank())
