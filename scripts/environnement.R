@@ -8,7 +8,9 @@ library(renv)
 
 
 packages_to_install = c("rmarkdown", "knitr", "tidyverse", "readxl", "magrittr", 'reshape2',
-                        "here", "openxlsx", "urca", "lmtest", "trend", "TSA", 'RColorBrewer')
+                        "here", "openxlsx", "urca", "lmtest", "trend", "TSA", 'RColorBrewer', 
+                        "CADFtest", "tsoutliers", "forecast", "lmtest", "Metrics", "TSstudio",
+                        "FinTS")
 
 
 install_and_load <- function(packages) {
