@@ -10,8 +10,7 @@ trafic_routier <- ts(Excel_trafic_routier[,2], start=c(2001,01),end=c(2024,09),f
 plot(trafic_routier,main="Trafic routier mensuel sur routes nationales",xlab="t",ylab="milliards de voitures-kilomètres")
 
 # Décomposition de la série temporelle pour isoler sa tendance, saisonnalité et aléatoire
-decomp.x=decompose(trafic_routier,type="multiplicative")
-decomp.x$figure
+decomp.x=decompose(trafic_routier)
 plot(decomp.x)
 
 # Corrélogrammes

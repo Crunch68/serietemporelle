@@ -55,15 +55,15 @@ trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
   
   # Suppression des valeurs ommises (à cause des moyennes mobiles)
   trafic_routier_trend<-na.omit(t_r$trend)
-  plot(trafic_routier_trend)
+  plot(trafic_routier_trend, main = "Série en niveau désaisonnalisée")
   
   # Test ADF
     # Sélection du lag optimal
-      # Basé sur les critères AIC, MAIC, BIC, HQC
+      # Basée sur les critères AIC, MAIC, BIC, HQC
       T <- length(trafic_routier_trend)
       pmax <- as.integer(12*(T/100)^(0.25))
       adf <- CADFtest(trafic_routier_trend, criterion="AIC", type="trend", max.lag.y=pmax)
-      summary(adf) # Convergence vers un lag 15 (avec l'ajout de méthode GTOS)
+      summary(adf) # Convergence vers un lag 15 (avec l'ajout de la méthode GTOS)
   
     adftest <- ur.df(trafic_routier_trend,type=c("trend"),lags=15)
     summary(adftest) # Présence d'au moins une racine unitaire (-2.806 > -3.42)
@@ -94,7 +94,7 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
 
   # Test ADF
     # Sélection du lag optimal
-      # Basé sur les critères AIC, MAIC, BIC, HQC
+      # Basée sur les critères AIC, MAIC, BIC, HQC
       T <- length(trafic_routier_diff1_trend)
       pmax <- as.integer(12*(T/100)^(0.25))
       adf <- CADFtest(trafic_routier_diff1_trend, criterion="AIC", type="none", max.lag.y=pmax)
@@ -272,15 +272,13 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
     end_zoom <- time(trafic_routier)[n_total + horizon - horizon]
     
     # Réprésentation graphique
-    plot(
-      trafic_routier,
+    plot(trafic_routier,
       main = "Prévision sur les 11 derniers mois (zoom)",
       xlab = "Temps",
       ylab = "Valeur",
       col = "black",
       xlim = c(start_zoom, end_zoom),
-      ylim = c(3.5, 5)
-    )
+      ylim = c(3.5, 5))
     
     lines(forecast_obj$mean, col = "red", lwd = 2)
     lines(forecast_obj$upper[, 2], col = "blue", lty = 2)
@@ -288,18 +286,18 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
     lines(forecast_obj$lower[, 2], col = "blue", lty = 2)
     
     legend("topleft",
-           legend = c("Observé", "Prévision", "Intervalle 95%"),
+           legend = c("Observations", "Prévisions", "Intervalle 95%"),
            col = c("black", "red", "blue"),
            lty = c(1, 1, 2),
            bty = "n")
   
   # Évaluation de la prévision
   cat("Évaluation de la prévision sur 11 mois :")
-  cat("RMSE  :", rmse(forecast_obj$mean, tail(trafic_routier, n = 11)))
-  cat("MAPE  :", mape(forecast_obj$mean, tail(trafic_routier, n = 11)))
-  cat("TheilU:", TheilU(forecast_obj$mean, tail(trafic_routier, n = 11)))
-  
-# Prévision correcte (valeurs réelles sont toutes dans l'intervalle de confiance à 95%)
+  cat("RMSE  :", rmse(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts absolus moyens entre les prévisions et la réalité sont très faibles
+  cat("MAPE  :", mape(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts en pourcentages moyens entre les prévisions et la réalité sont très faibles
+  cat("TheilU:", TheilU(forecast_obj$mean, tail(trafic_routier, n = 11))) # Très proche de 0 : modèle beaucoup plus performant que le modèle naïf où la valeur future est égale à celle passée
+
+# Prévision correcte (valeurs réelles sont toutes dans l'intervalle de confiance à 95% et les écarts moyens sont très faibles)
 
 
 
@@ -317,22 +315,19 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
   forecasts <- forecast(
     modele_sarima_corrected,
     xreg = future_dummy,
-    h = horizon
-  )
+    h = horizon)
   
   # Définir les bornes de l’axe des abscisses pour inclure les 12 mois futurs
   start_time <- start(trafic_routier)
   end_time <- time(tail(trafic_routier, 1)) + 12 / frequency(trafic_routier)
   
   # Tracé complet avec dézoom
-  plot(
-    trafic_routier,
+  plot(trafic_routier,
     main = "Prévision sur les 12 prochains mois",
     xlab = "Temps",
     ylab = "Valeur",
     xlim = c(start_time[1], end_time),
-    col = "black"
-  )
+    col = "black")
   
   # Ajouter les lignes de prévision et intervalles de confiance
   lines(forecasts$mean, col = "red", lwd = 2)
