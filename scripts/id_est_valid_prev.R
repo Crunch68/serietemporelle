@@ -9,13 +9,14 @@ library(Metrics)
 library(TSstudio)
 library(CADFtest)
 library(FinTS)
+library(tseries)
+library(DescTools)
 
 # Séries utiles
 Excel_trafic_routier <- read_excel("data/raw/Excel - trafic routier.xlsx", col_names = TRUE, col_types = NULL) 
 
 trafic_routier <- ts(Excel_trafic_routier[,2], start=c(2001,01),end=c(2024,09),frequency=12)
 trafic_routier_diff1=diff(trafic_routier,lag=1,differences=1)
-trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
 
 
 
@@ -32,7 +33,7 @@ trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
         pmax <- as.integer(12*(T/100)^(0.25))
         adf <- CADFtest(trafic_routier,criterion="MAIC",type="trend",max.lag.y=pmax)
         summary(adf) # Convergence vers un lag 13
-    adftest <- ur.df(trafic_routier, type = c("trend"), lags = 13
+    adftest <- ur.df(trafic_routier, type = c("trend"), lags = 13)
     summary(adftest) # Présence d'au moins une racine unitaire
         
   # Test de Phillips-Perron
@@ -49,9 +50,10 @@ trafic_routier_diff1_12=diff(trafic_routier_diff1,lag=12,differences=1)
 
 # 2 - Tests de stationnarité sur la série en niveau désaisonnalisée
   # Désaisonnalisation
-  t_r<-decompose(trafic_routier)
+  t_r<-decompose(trafic_routier) 
   plot(t_r)
   plot(t_r$trend)
+    # Cette méthode de désaisonnalisation est ici préférée pour retirer les valeurs aberrantes exogènes correspondant au Covid et pouvant fausser les tests
   
   # Suppression des valeurs ommises (à cause des moyennes mobiles)
   trafic_routier_trend<-na.omit(t_r$trend)
@@ -139,7 +141,7 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
 # 5 - Estimation automatique d'un modèle SARIMAX (en tenant compte des outliers)
   # Détection automatique des outliers
   outliers_detected <- tso(trafic_routier, types = c("AO", "LS", "TC"),maxit.iloop = 50)
-  
+
   # Définir les outliers manuels
   outliers_manuel_indices <- c(134, 136, #février 2012 a été un mois exceptionnellement froid
                              231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246) #Covid 
@@ -254,14 +256,14 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
     xreg = xreg_train)
   
   summary(model)
-  coeftest(model)
+  coeftest(model) # Toutes les variables sont significatives
   
   # Estimation des résidus
   checkresiduals(model)
   acf(c(model$residuals),lag.max=36) # Résidus bruit blanc
   pacf(c(model$residuals),lag.max=36) # Résidus bruit blanc
   jarque.bera.test(residuals(model)) # Résidus normaux
-  
+  ArchTest(residuals(model), lags = 12, demean = TRUE) # Résidus hétéroscédastiques (p-value < 0.05)
   
   # Prévision sur les 11 derniers mois
   forecast_obj <- forecast(model, h = horizon, xreg = xreg_test)
@@ -293,9 +295,9 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
   
   # Évaluation de la prévision
   cat("Évaluation de la prévision sur 11 mois :")
-  cat("RMSE  :", rmse(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts absolus moyens entre les prévisions et la réalité sont très faibles
-  cat("MAPE  :", mape(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts en pourcentages moyens entre les prévisions et la réalité sont très faibles
-  cat("TheilU:", TheilU(forecast_obj$mean, tail(trafic_routier, n = 11))) # Très proche de 0 : modèle beaucoup plus performant que le modèle naïf où la valeur future est égale à celle passée
+  cat("RMSE  :", rmse(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts absolus moyens entre les prévisions et la réalité sont très faibles (0.0663)
+  cat("MAPE  :", mape(forecast_obj$mean, tail(trafic_routier, n = 11))) # Ecarts en pourcentages moyens entre les prévisions et la réalité sont très faibles (0.0134 ou 1,34%)
+  cat("TheilU:", TheilU(forecast_obj$mean, tail(trafic_routier, n = 11))) # Très proche de 0 : modèle beaucoup plus performant que le modèle naïf où la valeur future est égale à celle passée (0.0156)
 
 # Prévision correcte (valeurs réelles sont toutes dans l'intervalle de confiance à 95% et les écarts moyens sont très faibles)
 
