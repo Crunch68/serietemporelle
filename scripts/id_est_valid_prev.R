@@ -90,7 +90,7 @@ pacf(c(trafic_routier_diff1_trend),lag.max=36) # Série stationnaire
   # Test de Cox-Stuart
   cs.test(trafic_routier_diff1_trend) # Absence de tendance
   plot(trafic_routier_diff1_trend)
-  summary(trafic_routier_diff1_trend) # Moyenne centréé en 0
+  summary(trafic_routier_diff1_trend) # Moyenne centrée en 0
   
   # Tests ne seront plus effectués sur des modèles sans tendance (ni constante pour l'ADF)
 
